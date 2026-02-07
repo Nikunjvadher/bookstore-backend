@@ -3,7 +3,8 @@ Conf();
 
 
 const config = {
-    PORT: process.env.PORT
+    PORT: process.env.PORT,
+    DB_URL: process.env.MONGODB_CONNECTION_URL
 }
 
 export default config;
