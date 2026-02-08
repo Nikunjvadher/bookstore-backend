@@ -1,6 +1,6 @@
-import app from "./src/app.js";
-import config from "./src/config/config.js";
-import connectDB from "./src/config/db.js";
+import app from "./src/app";
+import config from "./src/config/config";
+import connectDB from "./src/config/db";
 
 const port = config.PORT;
 

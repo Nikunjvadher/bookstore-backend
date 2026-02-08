@@ -1,13 +1,11 @@
 import express from "express";
-import { createUser } from "./userController.js";
+import { createUser } from "./userController";
 
 const userRouter = express.Router();
 
 
 
-userRouter.post('/', (req, res) => {
-    res.json({ message: "User Registered" })
-})
+userRouter.post('/register', createUser);
 
 
 

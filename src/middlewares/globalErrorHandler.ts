@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import type { HttpError } from "http-errors";
-import config from "../config/config.js";
+import config from "../config/config";
 
 const errorHandling = ((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     const statusCode = err.statusCode || 500;
