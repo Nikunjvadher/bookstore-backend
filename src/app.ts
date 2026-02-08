@@ -1,29 +1,27 @@
 import express, { type Request, type Response, type NextFunction } from "express";
-import config from "./config/config.js";
-import type { HttpError } from "http-errors";
 import createHttpError from "http-errors";
+import errorHandling from "./middlewares/globalErrorHandler.js";
+import userRouter from "./user/userRouter.js";
 
 const app = express();
-const port = config.PORT;
 
-app.get('/', (req: Request, res: Response) => {
-    const error = createHttpError(404, 'Something went wrong');
-    throw error;
-});
+// Middleware to parse JSON bodies
+app.use(express.json());
 
+// app.get('/', (req: Request, res: Response) => {
+//     const error = createHttpError(404, 'Something went wrong');
+//     throw error;
+// });
 
-app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
-    const statusCode = err.statusCode;
+// Handle 404 for any other route that is not found
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//     next(createHttpError(404, "Not Found"));
+// });
 
-    return res.json(statusCode).json({
-        message: err.message,
-        stack: config.env === "development" ? err.stack : '',
-    })
-});
+// app.use("/api/user", (req, res) => {
+//     res.json({ message: "User Registered" })
+// });
+app.use("/api/user", userRouter);
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
-
+app.use(errorHandling);
 export default app;
