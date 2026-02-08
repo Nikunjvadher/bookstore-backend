@@ -1,9 +1,19 @@
 import express from "express";
-import {createBook} from "./bookController";
+import { createBook } from "./bookController";
+import multer from "multer";
 
 const bookRouter = express.Router();
 
-bookRouter.post('/register', createBook );
+const upload = multer({
+    dest: 'uploads/',
+    limits: { fileSize: 1024 * 1024 * 5 }
+
+})
+
+bookRouter.post('/register', upload.fields([
+    { name: 'coverImage', maxCount: 1 },
+    { name: 'bookPdf', maxCount: 1 }
+]), createBook);
 
 
 
