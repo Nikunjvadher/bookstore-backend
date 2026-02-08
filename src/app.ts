@@ -18,9 +18,7 @@ app.use(express.json());
 //     next(createHttpError(404, "Not Found"));
 // });
 
-// app.use("/api/user", (req, res) => {
-//     res.json({ message: "User Registered" })
-// });
+
 app.use("/api/user", userRouter);
 
 app.use(errorHandling);
