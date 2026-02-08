@@ -55,12 +55,42 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     } catch (err) {
         return next(createHttpError(500, "Error WHile creating Token"))
     }
-
-
-
-
-
-    res.json({ id: newUser._id, accessToken: token })
+    res.status(201).json({ id: newUser._id, accessToken: token })
 }
 
-export { createUser };
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        const error = createHttpError(400, "All fields are required");
+        return next(error);
+    }
+
+    const user = await userModal.findOne({ email });
+    if (!user) {
+        const error = createHttpError(404, "User not found");
+        return next(error);
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        return next(createHttpError(401, "Invalid Credentials"));
+    }
+
+    try {
+        const token = sign({ sub: user._id }, config.JWT_SECRET as string, {
+            expiresIn: '1h',
+            // algorithm: 'HS256'
+        })
+        res.json({ accesToken: token })
+
+    } catch (err) {
+        return next(createHttpError(500, "Error WHile creating Token"));
+    } 
+
+}
+
+
+export { createUser, loginUser };
