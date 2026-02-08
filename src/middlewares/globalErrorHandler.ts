@@ -7,7 +7,7 @@ const errorHandling = ((err: HttpError, req: Request, res: Response, next: NextF
 
     res.status(statusCode).json({
         message: err.message,
-        errorStack: config.env === "development" ? err.stack : '',
+        // errorStack: config.ENV === "development" ? err.stack : '',
     });
 });
 
