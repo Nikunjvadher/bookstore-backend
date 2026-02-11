@@ -1,5 +1,5 @@
 import express from "express";
-import { createBook, listBooks, updateBook } from "./bookController";
+import { createBook, getSingleBook, listBooks, updateBook } from "./bookController";
 import multer from "multer";
 
 import path from "node:path";
@@ -13,14 +13,16 @@ const upload = multer({
 
 })
 
-bookRouter.get('/' , listBooks);
+bookRouter.get('/', listBooks);
+bookRouter.get('/:bookid', getSingleBook);
 
-bookRouter.post('/register',authenticate  , upload.fields([
+
+bookRouter.post('/register', authenticate, upload.fields([
     { name: 'coverImage', maxCount: 1 },
     { name: 'bookPdf', maxCount: 1 }
 ]), createBook);
 
-bookRouter.patch('/:bookid',authenticate  , upload.fields([
+bookRouter.patch('/:bookid', authenticate, upload.fields([
     { name: 'coverImage', maxCount: 1 },
     { name: 'bookPdf', maxCount: 1 }
 ]), updateBook);

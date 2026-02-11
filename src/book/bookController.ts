@@ -127,11 +127,25 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 
 const listBooks = async (req: Request, res: Response, next: NextFunction) => {
 
-    try{
+    try {
         const books = await bookModal.find();
         res.json(books);
-    }catch(error){
-
+    } catch (error) {
+        return next(new Error("Error fetching books"));
     }
 }
-export { createBook, updateBook  , listBooks};
+
+const getSingleBook = async (req: Request, res: Response, next: NextFunction) => {
+    const bookId = req.params.bookid;
+
+    try {
+        const books = await bookModal.findById(bookId);
+        res.json(books);
+    } catch (error) {
+        return next(new Error("Error fetching books"));
+    }
+}
+
+
+
+export { createBook, updateBook, listBooks, getSingleBook };
