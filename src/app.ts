@@ -3,10 +3,17 @@ import createHttpError from "http-errors";
 import errorHandling from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
 import bookRouter from "./book/bookRouter";
+import cors from 'cors'
 
 const app = express();
 
 // Middleware to parse JSON bodies
+// app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // app.get('/', (req: Request, res: Response) => {
