@@ -81,14 +81,14 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const token = sign({ sub: user._id }, config.JWT_SECRET as string, {
-            expiresIn: '1h',
+            expiresIn: '7d',
             // algorithm: 'HS256'
         })
         res.json({ accesToken: token })
 
     } catch (err) {
         return next(createHttpError(500, "Error WHile creating Token"));
-    } 
+    }
 
 }
 
