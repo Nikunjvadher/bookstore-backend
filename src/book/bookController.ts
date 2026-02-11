@@ -3,14 +3,10 @@ import cloudinary from "../config/cloudinary";
 import path from "node:path";
 import bookModal from "./bookModal";
 import fs from "node:fs";
+import { AuthRequest } from "../middlewares/authenticate";
 
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
-    const { title, author, genre, description, coverImage, bookPdf } = req.body;
-
-    // console.log(req.files);
-
-
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
     const coverImageFile = files.coverImage?.[0];
@@ -42,9 +38,11 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
             folder: 'book-pdf',
         });
 
+        const _req = req as AuthRequest;
+
         const newBook = await bookModal.create({
             title: req.body.title,
-            author: "69884da0c24fe473e958391b" as any,
+            author: _req.userId as any,
             // author: req.body.author,
             genre: req.body.genre,
             description: req.body.description,
