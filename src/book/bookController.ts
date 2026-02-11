@@ -43,7 +43,6 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         const newBook = await bookModal.create({
             title: req.body.title,
             author: _req.userId as any,
-            // author: req.body.author,
             genre: req.body.genre,
             description: req.body.description,
             coverImage: uploadResults.secure_url,
@@ -54,19 +53,79 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         await fs.promises.unlink(bookFilePath);
 
         res.status(201).json(newBook);
-         
+
         // console.log("uploaded results:", uploadResults);
         // console.log("uploaded cover image:", bookUploadResults);
     } catch (error) {
         return next(new Error("Error uploading book PDF"))
     }
-
-    // delete temp files
-
-
-
-
-    res.json({ message: "Book Created" });
 };
 
-export { createBook };
+
+const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+    const { title, description, genre } = req.body;
+    const bookId = req.params.bookid;
+
+    const book = await bookModal.findById(bookId);
+    if (!book) {
+        return next(new Error("Book not found"));
+    }
+
+    const _req = req as AuthRequest;
+    if (book.author.toString() !== _req.userId) {
+        return next(new Error("You are not authorized to update this book"));
+    }
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    let completeCoverImage = '';
+    const coverImageFile = files.coverImage?.[0];
+    if (coverImageFile) {
+        const bookName = coverImageFile.filename;
+        const coverImageMimeType = coverImageFile.mimetype.split('/').pop() as string;
+        const bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookName);
+
+        const bookUploadResults = await cloudinary.uploader.upload(bookFilePath, {
+            filename_override: bookName,
+            folder: 'book-cover',
+            format: coverImageMimeType,
+        });
+        completeCoverImage = bookUploadResults.secure_url;
+        await fs.promises.unlink(bookFilePath);
+    }
+
+    let completeFileName = '';
+    const bookPdfFile = files.bookPdf?.[0];
+    if (bookPdfFile) {
+        const bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookPdfFile.filename);
+        const bookFileName = bookPdfFile.filename;
+
+        const bookUploadResults = await cloudinary.uploader.upload(bookFilePath, {
+            resource_type: 'raw',
+            filename_override: bookFileName,
+            folder: 'book-pdf',
+        });
+
+        completeFileName = bookUploadResults.secure_url;
+        await fs.promises.unlink(bookFilePath);
+    }
+
+    const updateBook = await bookModal.findByIdAndUpdate(
+        {
+            _id: bookId
+        },
+        {
+            title,
+            description,
+            genre,
+            coverImage: completeCoverImage,
+            bookPdf: completeFileName
+        },
+        {
+            new: true
+        }
+    )
+
+    res.json(updateBook);
+}
+export { createBook, updateBook };
