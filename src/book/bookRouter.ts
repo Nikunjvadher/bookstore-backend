@@ -1,5 +1,5 @@
 import express from "express";
-import { createBook, updateBook } from "./bookController";
+import { createBook, listBooks, updateBook } from "./bookController";
 import multer from "multer";
 
 import path from "node:path";
@@ -12,6 +12,8 @@ const upload = multer({
     limits: { fileSize: 1024 * 1024 * 5 }
 
 })
+
+bookRouter.get('/' , listBooks);
 
 bookRouter.post('/register',authenticate  , upload.fields([
     { name: 'coverImage', maxCount: 1 },

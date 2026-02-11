@@ -124,4 +124,14 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
         return next(new Error("Error updating book"));
     }
 }
-export { createBook, updateBook };
+
+const listBooks = async (req: Request, res: Response, next: NextFunction) => {
+
+    try{
+        const books = await bookModal.find();
+        res.json(books);
+    }catch(error){
+
+    }
+}
+export { createBook, updateBook  , listBooks};
