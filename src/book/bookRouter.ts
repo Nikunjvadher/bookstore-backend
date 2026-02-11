@@ -1,5 +1,5 @@
 import express from "express";
-import { createBook, getSingleBook, listBooks, updateBook } from "./bookController";
+import { createBook, deleteBook, getSingleBook, listBooks, updateBook } from "./bookController";
 import multer from "multer";
 
 import path from "node:path";
@@ -15,7 +15,7 @@ const upload = multer({
 
 bookRouter.get('/', listBooks);
 bookRouter.get('/:bookid', getSingleBook);
-
+bookRouter.delete('/:bookid' , authenticate , deleteBook);
 
 bookRouter.post('/register', authenticate, upload.fields([
     { name: 'coverImage', maxCount: 1 },

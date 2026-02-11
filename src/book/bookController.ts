@@ -4,6 +4,7 @@ import path from "node:path";
 import bookModal from "./bookModal";
 import fs from "node:fs";
 import { AuthRequest } from "../middlewares/authenticate";
+import createHttpError from "http-errors";
 
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
@@ -146,6 +147,52 @@ const getSingleBook = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+    const bookId = req.params.bookid;
+
+    try {
+        const book = await bookModal.findById(bookId);
+        if (!book) {
+            return next(new Error("Book not found"));
+        }
+
+        const _req = req as AuthRequest;
+        if (book.author.toString() !== _req.userId) {
+            return next(new Error("You are not authorized to update this book"));
+        }
+
+        const coverImageSplit = book.coverImage.split('/');
+        const bookPdfSplit = book.bookPdf.split('/');
+
+        const coverImagePublicId = coverImageSplit[coverImageSplit.length - 2] + '/' + (coverImageSplit[coverImageSplit.length - 1]?.split('.')[0]);
+        const bookPdfPublicId = bookPdfSplit[bookPdfSplit.length - 2] + '/' + bookPdfSplit[bookPdfSplit.length - 1];
+
+        console.log(coverImagePublicId);
+        console.log(bookPdfPublicId);
+
+        try {
+            await cloudinary.uploader.destroy(coverImagePublicId);
+
+        } catch (error) {
+            return next(createHttpError(400, "Error deleting cover image"))
+        }
+        try {
+            await cloudinary.uploader.destroy(bookPdfPublicId, {
+                resource_type: 'raw',
+            });
+
+        } catch (error) {
+            return next(createHttpError(400, "Error deleting pdf image"))
+        }
+        await bookModal.findByIdAndDelete(bookId);
+
+        return res.sendStatus(204);
+    } catch (error) {
+        return next(new Error("Error deleting book"));
+    }
+
+}
 
 
-export { createBook, updateBook, listBooks, getSingleBook };
+
+export { createBook, updateBook, listBooks, getSingleBook, deleteBook };
