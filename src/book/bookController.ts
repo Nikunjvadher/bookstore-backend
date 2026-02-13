@@ -140,7 +140,7 @@ const getSingleBook = async (req: Request, res: Response, next: NextFunction) =>
     const bookId = req.params.bookid;
 
     try {
-        const books = await bookModal.findById(bookId);
+        const books = await bookModal.findById(bookId).populate('author', 'name');
         res.json(books);
     } catch (error) {
         return next(new Error("Error fetching books"));
