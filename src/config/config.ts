@@ -5,7 +5,7 @@ Conf();
 const config = {
     PORT: process.env.PORT,
     DB_URL: process.env.MONGODB_CONNECTION_URL,
-    ENV: process.env,
+    ENV: process.env.NODE_ENV,
     JWT_SECRET: process.env.JWT_SECRET,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,

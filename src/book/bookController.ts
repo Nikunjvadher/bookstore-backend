@@ -129,7 +129,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 const listBooks = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const books = await bookModal.find();
+        const books = await bookModal.find().populate('author', 'name');
         res.json(books);
     } catch (error) {
         return next(new Error("Error fetching books"));
