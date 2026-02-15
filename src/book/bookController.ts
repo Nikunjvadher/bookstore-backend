@@ -193,6 +193,27 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
 
 }
 
+const getUserBooks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const _req = req as AuthRequest;
+        let userId = _req.userId;
+
+        // If userId is in params, use that (for public profile)
+        if (req.params.userId) {
+            userId = req.params.userId as string;
+        }
+
+        if (!userId) {
+            return next(new Error("User ID is required"));
+        }
+
+        const books = await bookModal.find({ author: userId as any }).populate('author', 'name');
+        res.json(books);
+    } catch (error) {
+        return next(new Error("Error fetching user books"));
+    }
+}
 
 
-export { createBook, updateBook, listBooks, getSingleBook, deleteBook };
+
+export { createBook, updateBook, listBooks, getSingleBook, deleteBook, getUserBooks };

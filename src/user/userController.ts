@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import { sign } from "jsonwebtoken";
 import config from "../config/config";
 import { User } from "./userTypes";
+import { AuthRequest } from "../middlewares/authenticate";
 
 
 
@@ -92,5 +93,19 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
 }
 
+const getUserProfile = async (req: Request, res: Response, next: NextFunction) => {
+    const _req = req as AuthRequest;
 
-export { createUser, loginUser };
+    try {
+        const user = await userModal.findById(_req.userId).select('-password');
+        if (!user) {
+            return next(createHttpError(404, "User not found"));
+        }
+        res.json(user);
+    } catch (err) {
+        return next(createHttpError(500, "Error while fetching profile"));
+    }
+}
+
+
+export { createUser, loginUser, getUserProfile };
