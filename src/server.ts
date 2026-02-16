@@ -1,7 +1,11 @@
 import app from "./app";
 
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT;
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+if (!port) {
+  throw new Error("PORT is not defined");
+}
+
+app.listen(Number(port), "0.0.0.0", () => {
+  console.log(`Server running on port ${port}`);
 });
